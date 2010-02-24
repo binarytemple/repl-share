@@ -1,0 +1,41 @@
+# repl-share
+
+repl-share is a library the allows you to share your repl with others
+across the local network.
+
+The idea for this library came to me during a Clojure meetup.  The
+presenter, Russ Olsen, was demonstrating some code at the REPL and I
+was having a hard time seeing from the back of the room.  I thought to
+myself, "Wouldn't it be nice if he could share his REPL over the wifi
+connection?"
+
+## Justifications
+
+1) Why not just allow people to use a read-only VNC?
+
+   This makes the presumption that a VNC server is installed and
+   configured correctly.  If not, it's fairly trivial to setup, but
+   some people may refuse to have a VNC server on their machine.
+
+2) Why not just stand up an Ajax based web page that polls an embedded
+HTTP server?
+
+     This could work but requires either DNS or an IP address to be
+     passed around.
+
+There are certainly others ways to share a presentation with many
+people in a room.  However, I still think there is a place and time
+when you want to easily and instantly share your REPL, and allow
+others to watch in their own REPL.
+
+## Usage
+
+FIXME: write
+
+## Installation
+
+FIXME: write
+
+## License
+
+MIT?
