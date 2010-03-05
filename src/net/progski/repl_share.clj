@@ -1,5 +1,7 @@
 ;; TODOs
 ;;
+;; Send kill signal to watchers.
+;;
 ;; For large content will need to break across multiple
 ;; datagrams...may want to avoid this all together.
 ;;
@@ -68,3 +70,12 @@
 (comment 
   (watch-share "ryan-repl")
   (send-to-share "ryan-repl" "(+ 1 1)"))
+
+;; Start a new, sub-REPL.
+(defn share
+  "Share your REPL with the passed share name."
+  [share]
+  (clojure.main/repl
+   :prompt (fn [] (printf "[share] %s=> " (ns-name *ns*)))))
+
+(comment :print (fn [o] (broadcast)))
