@@ -6,7 +6,8 @@
 ;; datagrams...may want to avoid this all together.
 ;;
 (ns net.progski.repl-share
-  (:import [java.net DatagramPacket InetAddress MulticastSocket]))
+  (:import [java.net DatagramPacket InetAddress MulticastSocket]
+           [net.progski.repl_share BroadcastWriter]))
 
 ;; Different group addr?
 (def *group-addr* (InetAddress/getByName "228.5.6.7"))
@@ -36,19 +37,6 @@
      (doto (MulticastSocket. port)
        (.joinGroup group))))
 
-
-
-(defn send-to-share [share msg]
-  (let [sock (MulticastSocket. 6789)
-        msg* (serialize {:share share
-                         :content msg})
-        packet (make-packet msg* *group-addr* 6789)]
-    (doto sock
-      (.send packet))))
-
-;; (defn kill-share [share]
-;;   (send-to-share share {:kill true}))
-
 (def buf (byte-array 1000))
 
 (def *watching* (atom false))
@@ -68,14 +56,12 @@
                  (f msg)))))))
              
 (comment 
-  (watch-share "ryan-repl")
-  (send-to-share "ryan-repl" "(+ 1 1)"))
+  (watch-share "ryan-repl"))
 
 ;; Start a new, sub-REPL.
 (defn share
   "Share your REPL with the passed share name."
   [share]
-  (clojure.main/repl
-   :prompt (fn [] (printf "[share] %s=> " (ns-name *ns*)))))
-
-(comment :print (fn [o] (broadcast)))
+  (binding [*out* (BroadcastWriter. share *out*)]
+    (clojure.main/repl
+     :prompt (fn [] (printf "[share] %s=> " (ns-name *ns*))))))
