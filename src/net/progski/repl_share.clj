@@ -8,36 +8,8 @@
 (ns net.progski.repl-share
   (:import [clojure.lang LineNumberingPushbackReader]
            [java.io StringReader]
-           [java.net DatagramPacket InetAddress MulticastSocket]
-           [net.progski.repl_share BroadcastWriter]))
-
-;; Different group addr?
-(def *group-addr* (InetAddress/getByName "228.5.6.7"))
-
-(defn serialize
-  "Serialize a Clojure expression to a byte array."
-  [expr]
-  (binding [*print-dup* true] (.getBytes (pr-str expr))))
-
-(defn deserialize
-  "Deserialize a byte array to a Clojure data type."
-  [bytes]
-  (read-string (String. bytes)))
-
-(defn make-packet
-  "Create a UDP packet.  If 1 arg, then it's for receiving. If 2 args,
-   then it's for sending."
-  ([buf]
-     (DatagramPacket. buf (count buf)))
-  ([msg addr port]
-     (DatagramPacket. msg (count msg) addr port)))
-
-(defn join-group
-  "Joing a multicast group."
-  ([group] (join-group group 6789))
-  ([group port]
-     (doto (MulticastSocket. port)
-       (.joinGroup group))))
+           [net.progski.repl_share BroadcastWriter])
+  (:use [net.progski.repl-share.broadcast]))
 
 (def buf (byte-array 1000))
 
@@ -57,38 +29,6 @@
                  (reset! *watching* false)
                  (f msg)))))))
              
-(comment 
-  (watch-share "ryan-repl"))
-
-
-(def *group-addr* (InetAddress/getByName "228.5.6.7"))
-
-(defn make-packet
-  "Create a UDP packet.  If 1 arg, then it's for receiving. If 2 args,
-   then it's for sending."
-  ([buf]
-     (DatagramPacket. buf (count buf)))
-  ([msg addr port]
-     (DatagramPacket. msg (count msg) addr port)))
-
-(defn serialize
-  "Serialize a Clojure expression to a byte array."
-  [expr]
-  (binding [*print-dup* true] (.getBytes (pr-str expr))))
-
-(defn deserialize
-  "Deserialize a byte array to a Clojure data type."
-  [bytes]
-  (read-string (String. bytes)))
-
-(defn broadcast [share msg]
-  (let [sock (MulticastSocket. 6789)
-        msg* (serialize {:share share
-                         :content msg})
-        packet (make-packet msg* *group-addr* 6789)]
-    (doto sock
-      (.send packet))))
-
 ;; Relies on the fact that .readLine will return the empty string for
 ;; CR and nil for EOT.
 (defn make-reader [share]
