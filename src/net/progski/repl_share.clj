@@ -6,7 +6,9 @@
 ;; datagrams...may want to avoid this all together.
 ;;
 (ns net.progski.repl-share
-  (:import [java.net DatagramPacket InetAddress MulticastSocket]
+  (:import [clojure.lang LineNumberingPushbackReader]
+           [java.io StringReader]
+           [java.net DatagramPacket InetAddress MulticastSocket]
            [net.progski.repl_share BroadcastWriter]))
 
 ;; Different group addr?
@@ -58,10 +60,54 @@
 (comment 
   (watch-share "ryan-repl"))
 
+
+(def *group-addr* (InetAddress/getByName "228.5.6.7"))
+
+(defn make-packet
+  "Create a UDP packet.  If 1 arg, then it's for receiving. If 2 args,
+   then it's for sending."
+  ([buf]
+     (DatagramPacket. buf (count buf)))
+  ([msg addr port]
+     (DatagramPacket. msg (count msg) addr port)))
+
+(defn serialize
+  "Serialize a Clojure expression to a byte array."
+  [expr]
+  (binding [*print-dup* true] (.getBytes (pr-str expr))))
+
+(defn deserialize
+  "Deserialize a byte array to a Clojure data type."
+  [bytes]
+  (read-string (String. bytes)))
+
+(defn broadcast [share msg]
+  (let [sock (MulticastSocket. 6789)
+        msg* (serialize {:share share
+                         :content msg})
+        packet (make-packet msg* *group-addr* 6789)]
+    (doto sock
+      (.send packet))))
+
+;; Relies on the fact that .readLine will return the empty string for
+;; CR and nil for EOT.
+(defn make-reader [share]
+  (fn [request-prompt request-exit]
+    (let [line (.readLine *in*)]
+      (broadcast share line)
+      (cond (nil? line)
+            request-exit
+            (empty? line)
+            request-prompt
+            :else
+            (do (binding [*in* (LineNumberingPushbackReader. (StringReader. line))]
+                  (clojure.main/repl-read request-prompt request-exit)))))))
+
 ;; Start a new, sub-REPL.
 (defn share
   "Share your REPL with the passed share name."
   [share]
   (binding [*out* (BroadcastWriter. share *out*)]
     (clojure.main/repl
-     :prompt (fn [] (printf "[share] %s=> " (ns-name *ns*))))))
+     :prompt (fn [] (printf "[share] %s=> " (ns-name *ns*)))
+     :read (make-reader share))))
