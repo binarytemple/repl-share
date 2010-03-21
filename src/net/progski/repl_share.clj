@@ -8,14 +8,14 @@
 (ns net.progski.repl-share
   (:import [clojure.lang LineNumberingPushbackReader]
            [java.io StringReader]
-           [net.progski.repl_share BroadcastWriter])
+           [net.progski.repl_share BroadcastReader BroadcastWriter])
   (:use [net.progski.repl-share.broadcast]))
 
 (def buf (byte-array 1000))
 
 (def *watching* (atom false))
 
-(defn watch-share
+(defn watch-share*
   "Watch a particular share.  For each message received call f,
   passing it the message."
   [share f]
@@ -28,26 +28,19 @@
                (if (msg :kill)
                  (reset! *watching* false)
                  (f msg)))))))
-             
-;; Relies on the fact that .readLine will return the empty string for
-;; CR and nil for EOT.
-(defn make-reader [share]
-  (fn [request-prompt request-exit]
-    (let [line (.readLine *in*)]
-      (broadcast share line)
-      (cond (nil? line)
-            request-exit
-            (empty? line)
-            request-prompt
-            :else
-            (do (binding [*in* (LineNumberingPushbackReader. (StringReader. line))]
-                  (clojure.main/repl-read request-prompt request-exit)))))))
 
+(defn watch-share
+  "Watch the share."
+  [share]
+  (watch-share* share
+                #(do (print (:content %))
+                     (flush))))
+             
 ;; Start a new, sub-REPL.
 (defn share
   "Share your REPL with the passed share name."
   [share]
-  (binding [*out* (BroadcastWriter. share *out*)]
+  (binding [*out* (BroadcastWriter. share *out*)
+            *in* (BroadcastReader. share *in*)]
     (clojure.main/repl
-     :prompt (fn [] (printf "[share] %s=> " (ns-name *ns*)))
-     :read (make-reader share))))
+     :prompt (fn [] (printf "[share] %s=> " (ns-name *ns*))))))
