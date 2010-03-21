@@ -17,3 +17,9 @@
   watching the shared REPL.  That is, I would like for the watch
   function to NOT take over the watcher's REPL.
   
+* TODO printStackTrace prints nil on watcher side
+
+* TODO Multiple lines on share side causes EOF
+
+* TODO Send kill signal to watchers
+  Sharer needs to send kill signal to watches when closing share.
