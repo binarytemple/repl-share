@@ -20,9 +20,10 @@
      (let [{:keys [buff share in]} (.state this)
            ch (char (.readSuper this))]
        (when (= ch \newline)
-         (broadcast share (apply str @buff))
+         (broadcast share (apply str (conj @buff \newline)))
          (reset! buff []))
-       (swap! buff conj ch)
+       (if-not (= ch \newline)
+         (swap! buff conj ch))
        (int ch))))
 
 (defn -unread
