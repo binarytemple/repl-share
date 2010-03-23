@@ -18,3 +18,7 @@
 
 * TODO Send kill signal to watchers
   Sharer needs to send kill signal to watches when closing share.
+* TODO How do I test this?
+  After futzing with the reader impl multiple times it occured to me I
+  need to write some automated tests to expedite the dev process and
+  to prevent regressions.
