@@ -18,13 +18,13 @@
 (defn -read
   ([this]
      (let [{:keys [buff share in]} (.state this)
-           ch (char (.readSuper this))]
-       (when (= ch \newline)
-         (broadcast share (apply str (conj @buff \newline)))
-         (reset! buff []))
-       (if-not (= ch \newline)
+           raw (.readSuper this)
+           ch (char raw)]
+       (if (= ch \newline)
+         (do (broadcast share (apply str (conj @buff \newline)))
+             (reset! buff []))
          (swap! buff conj ch))
-       (int ch))))
+       raw)))
 
 (defn -unread
   ([this c]
