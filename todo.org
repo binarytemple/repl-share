@@ -4,12 +4,6 @@
 
   The above will cause an EOF in the watcher.
 
-* TODO Implement watcher side
-
-  Curently I'm taking a funciton set by the user.  It should just be
-  (watch share-name).  It should show the shared REPL I/O
-  verbatum.
-
 * TODO Interleave watcher REPL
 
   It would also be great if this output was interleaved with the users
@@ -18,6 +12,7 @@
   function to NOT take over the watcher's REPL.
   
 * TODO printStackTrace prints nil on watcher side
+  Exceptions, in general, don't seem to showup on the watcher side.
 
 * TODO Multiple lines on share side causes EOF
 
