@@ -15,7 +15,7 @@
 
 (def *watching* (atom false))
 
-(defn watch-share*
+(defn watch*
   "Watch a particular share.  For each message received call f,
   passing it the message."
   [share f]
@@ -29,12 +29,12 @@
                  (reset! *watching* false)
                  (f msg)))))))
 
-(defn watch-share
+(defn watch
   "Watch the share."
   [share]
-  (watch-share* share
-                #(do (print (:content %))
-                     (flush))))
+  (watch* share
+          #(do (print (:content %))
+               (flush))))
              
 ;; Start a new, sub-REPL.
 (defn share
