@@ -6,9 +6,7 @@
 ;; datagrams...may want to avoid this all together.
 ;;
 (ns net.progski.repl-share
-  (:import [clojure.lang LineNumberingPushbackReader]
-           [java.io StringReader]
-           [net.progski.repl_share BroadcastReader BroadcastWriter])
+  (:import [net.progski.repl_share BroadcastReader BroadcastWriter])
   (:use [net.progski.repl-share.broadcast]))
 
 (def buf (byte-array 1000))
