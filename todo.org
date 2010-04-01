@@ -14,11 +14,58 @@
 * TODO printStackTrace prints nil on watcher side
   Exceptions, in general, don't seem to showup on the watcher side.
 
-* TODO Multiple lines on share side causes EOF
+* DONE Multiple lines on share side causes EOF
 
 * TODO Send kill signal to watchers
   Sharer needs to send kill signal to watches when closing share.
-* TODO How do I test this?
+* DONE How do I test this?
   After futzing with the reader impl multiple times it occured to me I
   need to write some automated tests to expedite the dev process and
   to prevent regressions.
+* TODO Verify this actually works across local network
+* TODO Exception when doing addition over multiple lines
+[ryan] user=> (+ 1
+java.lang.IllegalStateException: Can't pop empty vector
+[ryan] user=> (.printStackTrace *e)
+clojure.lang.LispReader$ReaderException: java.lang.IllegalStateException: Can't pop empty vector
+	at clojure.lang.LispReader.read(LispReader.java:180)
+	at clojure.core$read__5425.invoke(core.clj:2385)
+	at clojure.core$read__5425.invoke(core.clj:2383)
+	at clojure.core$read__5425.invoke(core.clj:2381)
+	at clojure.core$read__5425.invoke(core.clj:2379)
+	at clojure.main$repl_read__7371.invoke(main.clj:92)
+	at clojure.main$repl__7385$read_eval_print__7397.invoke(main.clj:181)
+	at clojure.main$repl__7385.doInvoke(main.clj:200)
+	at clojure.lang.RestFn.invoke(RestFn.java:426)
+	at net.progski.repl_share$share__49.invoke(repl_share.clj:36)
+	at user$eval__55.invoke(NO_SOURCE_FILE:4)
+	at clojure.lang.Compiler.eval(Compiler.java:4642)
+	at clojure.core$eval__5236.invoke(core.clj:2017)
+	at clojure.main$repl__7385$read_eval_print__7397.invoke(main.clj:183)
+	at clojure.main$repl__7385.doInvoke(main.clj:200)
+	at clojure.lang.RestFn.invoke(RestFn.java:426)
+	at clojure.main$repl_opt__7431.invoke(main.clj:254)
+	at clojure.main$main__7466.doInvoke(main.clj:347)
+	at clojure.lang.RestFn.invoke(RestFn.java:402)
+	at clojure.lang.Var.invoke(Var.java:355)
+	at clojure.lang.AFn.applyToHelper(AFn.java:171)
+	at clojure.lang.Var.applyTo(Var.java:476)
+	at clojure.main.main(main.java:37)
+Caused by: java.lang.IllegalStateException: Can't pop empty vector
+	at clojure.lang.PersistentVector.pop(PersistentVector.java:322)
+	at clojure.lang.PersistentVector.pop(PersistentVector.java:18)
+	at clojure.lang.RT.pop(RT.java:612)
+	at clojure.core$pop__4707.invoke(core.clj:965)
+	at clojure.lang.Atom.swap(Atom.java:37)
+	at clojure.core$swap_BANG___4880.invoke(core.clj:1474)
+	at net.progski.repl_share.BroadcastReader$_unread__21.invoke(BroadcastReader.clj:32)
+	at net.progski.repl_share.BroadcastReader.unread(Unknown Source)
+	at clojure.lang.LispReader.unread(LispReader.java:103)
+	at clojure.lang.LispReader.readNumber(LispReader.java:209)
+	at clojure.lang.LispReader.read(LispReader.java:136)
+	at clojure.lang.LispReader.readDelimitedList(LispReader.java:1057)
+	at clojure.lang.LispReader$ListReader.invoke(LispReader.java:897)
+	at clojure.lang.LispReader.read(LispReader.java:145)
+	... 22 more
+nil
+
