@@ -41,4 +41,4 @@
   (binding [*out* (BroadcastWriter. share *out*)
             *in* (BroadcastReader. share *in*)]
     (clojure.main/repl
-     :prompt (fn [] (printf "[share] %s=> " (ns-name *ns*))))))
+     :prompt (fn [] (printf "[%s] %s=> " share (ns-name *ns*))))))
