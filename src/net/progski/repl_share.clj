@@ -1,10 +1,3 @@
-;; TODOs
-;;
-;; Send kill signal to watchers.
-;;
-;; For large content will need to break across multiple
-;; datagrams...may want to avoid this all together.
-;;
 (ns net.progski.repl-share
   (:import [net.progski.repl_share BroadcastReader BroadcastWriter])
   (:use [net.progski.repl-share.broadcast]))
