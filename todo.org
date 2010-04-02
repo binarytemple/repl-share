@@ -23,6 +23,7 @@
   need to write some automated tests to expedite the dev process and
   to prevent regressions.
 * TODO Verify this actually works across local network
+  Verified that it works for two machines over my home network (wifi).
 * TODO Exception when doing addition over multiple lines
 [ryan] user=> (+ 1
 java.lang.IllegalStateException: Can't pop empty vector
