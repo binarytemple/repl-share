@@ -1,27 +1,26 @@
 (ns net.progski.repl-share.BroadcastReader
-  (:import [java.net DatagramPacket InetAddress MulticastSocket])
-  (:use [net.progski.repl-share.broadcast])
   (:gen-class
    :extends clojure.lang.LineNumberingPushbackReader
    :init init
    :main false
-   :constructors {[String java.io.Reader] [java.io.Reader]}
+   :constructors {[String clojure.lang.Ref java.io.Reader] [java.io.Reader]}
    :state state
    :exposes-methods {read readSuper
                      unread unreadSuper}))
 
-(defn -init [s in]
+(defn -init [s r in]
   [[in] {:buff (atom [])
+         :content r
          :share s
          :in in}])
 
 (defn -read
   ([this]
-     (let [{:keys [buff share in]} (.state this)
+     (let [{:keys [buff content share in]} (.state this)
            raw (.readSuper this)
            ch (char raw)]
        (if (= ch \newline)
-         (do (broadcast share (apply str (conj @buff \newline)))
+         (do (dosync (alter content str (apply str (conj @buff \newline))))
              (reset! buff []))
          (swap! buff conj ch))
        raw)))

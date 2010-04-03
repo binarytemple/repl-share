@@ -1,17 +1,15 @@
 (ns net.progski.repl-share.BroadcastWriter
-  (:import [java.net DatagramPacket InetAddress MulticastSocket])
-  (:use [net.progski.repl-share.broadcast])
   (:gen-class
    :extends java.io.Writer
    :init init
    :main false
-   :constructors {[String java.io.Writer] []}
+   :constructors {[String clojure.lang.Ref java.io.Writer] []}
    :state state
-   :exposes-methods {append appendSuper,
-                     write writeSuper}))
+   :exposes-methods {write writeSuper}))
 
-(defn -init [s out]
+(defn -init [s r out]
   [[] {:buff (atom [])
+       :content r
        :share s
        :out out}])
 
@@ -23,8 +21,8 @@
        (.write out ch-arr off len))))
 
 (defn -flush [this]
-  (let [{:keys [share out buff]} (.state this)]
-    (broadcast share (apply str @buff))
+  (let [{:keys [share content out buff]} (.state this)]
+    (dosync (alter content str (apply str @buff)))
     (reset! buff [])
     (.flush out)))
 
