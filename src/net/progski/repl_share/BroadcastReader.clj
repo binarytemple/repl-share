@@ -20,13 +20,14 @@
            raw (.readSuper this)
            ch (char raw)]
        (if (= ch \newline)
-         (do (dosync (alter content str (apply str (conj @buff \newline))))
-             (reset! buff []))
-         (swap! buff conj ch))
+         (do (dosync (alter content str \newline))
+             ;;(apply str (conj @buff \newline))))
+             #_ (reset! buff []))
+         (dosync (alter content str ch)))
        raw)))
 
 (defn -unread
   ([this c]
-     (let [{buff :buff} (.state this)]
-       (swap! buff pop)
+     (let [{content :content buff :buff} (.state this)]
+       (dosync (alter content #(.substring % 0 (- (count %) 1))))
        (.unreadSuper this c))))
