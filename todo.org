@@ -4,7 +4,7 @@
 
   The above will cause an EOF in the watcher.
 
-* TODO Interleave watcher REPL
+* DONE Interleave watcher REPL
 
   It would also be great if this output was interleaved with the users
   current REPL session so they can try stuff at their local REPL while
