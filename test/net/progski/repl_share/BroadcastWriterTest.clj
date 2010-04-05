@@ -4,26 +4,18 @@
   (:import net.progski.repl_share.BroadcastWriter))
 
 (declare *bw*)
-(def *broadcast-flag* (atom false))
+(def content (ref ""))
 
 ;; Helpers
 (defn buff-str []
   (apply str @(:buff (.state *bw*))))
 
-(defn mock-broadcast [_ _]
-  (reset! *broadcast-flag* true))
-
 ;; Fixtures
 (defn bw-fixture [f]
-  (binding [*bw* (BroadcastWriter. "test" (java.io.StringWriter.))]
+  (binding [*bw* (BroadcastWriter. "test" content (java.io.StringWriter.))]
     (f)))
 
-(defn broadcast-fixture [f]
-  (reset! *broadcast-flag* false)
-  (binding [broadcast mock-broadcast]
-    (f)))
-
-(use-fixtures :each bw-fixture broadcast-fixture)
+(use-fixtures :each bw-fixture)
 
 ;; Test cases
 (deftest test-write
@@ -31,7 +23,5 @@
   (is (= "foo" (buff-str))))
 
 (deftest test-flush
-  (binding [broadcast mock-broadcast]
-    (.flush *bw*)
-    (is @*broadcast-flag*)
-    (is (empty? (buff-str)))))
+  (.flush *bw*)
+  (is (empty? (buff-str))))

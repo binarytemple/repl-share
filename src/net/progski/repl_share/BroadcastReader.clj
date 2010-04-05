@@ -9,25 +9,21 @@
                      unread unreadSuper}))
 
 (defn -init [s r in]
-  [[in] {:buff (atom [])
-         :content r
-         :share s
-         :in in}])
+  [[in] {:content r
+         :share s}])
 
 (defn -read
   ([this]
-     (let [{:keys [buff content share in]} (.state this)
+     (let [{:keys [content share]} (.state this)
            raw (.readSuper this)
            ch (char raw)]
        (if (= ch \newline)
-         (do (dosync (alter content str \newline))
-             ;;(apply str (conj @buff \newline))))
-             #_ (reset! buff []))
+         (dosync (alter content str \newline))
          (dosync (alter content str ch)))
        raw)))
 
 (defn -unread
   ([this c]
-     (let [{content :content buff :buff} (.state this)]
+     (let [{content :content} (.state this)]
        (dosync (alter content #(.substring % 0 (- (count %) 1))))
        (.unreadSuper this c))))
