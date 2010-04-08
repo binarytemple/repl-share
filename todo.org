@@ -24,7 +24,7 @@
   to prevent regressions.
 * TODO Verify this actually works across local network
   Verified that it works for two machines over my home network (wifi).
-* TODO Exception when doing addition over multiple lines
+* DONE Exception when doing addition over multiple lines
 [ryan] user=> (+ 1
 java.lang.IllegalStateException: Can't pop empty vector
 [ryan] user=> (.printStackTrace *e)
