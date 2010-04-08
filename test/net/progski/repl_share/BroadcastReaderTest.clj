@@ -4,13 +4,13 @@
   (:import net.progski.repl_share.BroadcastReader))
 
 (declare *br*)
-(def content (ref ""))
+(def content (atom []))
 
 ;; Fixtures
 (defn br-fixture [f]
   (binding [*br* (BroadcastReader. "test" content (java.io.StringReader. "ryan\n"))]
     (f))
-  (dosync (ref-set content "")))
+  (dosync (reset! content [])))
 
 (use-fixtures :each br-fixture)
 
@@ -18,12 +18,12 @@
 (deftest test-read
   (is (= (int \r) (.read *br*)))
   (dotimes [_ 4] (.read *br*))
-  (is (= "ryan\n" @content)))
+  (is (= "ryan\n" (apply str @content))))
 
 (deftest test-unread
   (let [ch (.read *br*)]
-    (is (= "r" @content))
+    (is (= "r" (apply str @content)))
     (.unread *br* ch)
     (is (empty? @content))
     (.read *br*)
-    (is (= "r" @content))))
+    (is (= "r" (apply str @content)))))

@@ -4,7 +4,7 @@
   (:import net.progski.repl_share.BroadcastWriter))
 
 (declare *bw*)
-(def content (ref ""))
+(def content (atom []))
 
 ;; Helpers
 (defn buff-str []
@@ -20,8 +20,11 @@
 ;; Test cases
 (deftest test-write
   (.write *bw* (char-array "foo"))
-  (is (= "foo" (buff-str))))
+  (is (= "foo" (buff-str)))
+  (is (empty? @content)))
 
 (deftest test-flush
+  (.write *bw* (char-array "ryan"))
   (.flush *bw*)
-  (is (empty? (buff-str))))
+  (is (empty? (buff-str)))
+  (is (= "ryan" (apply str @content))))

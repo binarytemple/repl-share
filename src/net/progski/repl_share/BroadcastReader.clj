@@ -3,7 +3,7 @@
    :extends clojure.lang.LineNumberingPushbackReader
    :init init
    :main false
-   :constructors {[String clojure.lang.Ref java.io.Reader] [java.io.Reader]}
+   :constructors {[String clojure.lang.Atom java.io.Reader] [java.io.Reader]}
    :state state
    :exposes-methods {read readSuper
                      unread unreadSuper}))
@@ -18,11 +18,11 @@
            c (.readSuper this)]
        (if (= c -1)
          nil
-         (dosync (alter content str (char c))))
+         (swap! content conj (char c)))
        c)))
 
 (defn -unread
   ([this c]
      (let [{content :content} (.state this)]
-       (dosync (alter content #(.substring % 0 (- (count %) 1))))
+       (swap! content pop)
        (.unreadSuper this c))))

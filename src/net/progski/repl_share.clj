@@ -40,7 +40,7 @@
        :prompt (fn [] (printf "[watching %s] %s=> " share (ns-name *ns*)))))))
              
 ;; Share implementation
-(def content (ref ""))
+(def content (atom []))
 
 (defn share
   "Share your REPL with the passed share name."
@@ -50,6 +50,6 @@
     (clojure.main/repl
      :prompt (fn [] (printf "[%s] %s=> " share (ns-name *ns*)))
      :flush (fn []
-              (broadcast share @content)
-              (dosync (ref-set content ""))
+              (broadcast share (apply str @content))
+              (reset! content [])
               (flush)))))

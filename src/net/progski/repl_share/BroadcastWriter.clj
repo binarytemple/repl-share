@@ -3,7 +3,7 @@
    :extends java.io.Writer
    :init init
    :main false
-   :constructors {[String clojure.lang.Ref java.io.Writer] []}
+   :constructors {[String clojure.lang.Atom java.io.Writer] []}
    :state state
    :exposes-methods {write writeSuper}))
 
@@ -21,8 +21,8 @@
        (.write out ch-arr off len))))
 
 (defn -flush [this]
-  (let [{:keys [share content out buff]} (.state this)]
-    (dosync (alter content str (apply str @buff)))
+  (let [{:keys [content buff out]} (.state this)]
+    (swap! content (partial apply conj) @buff)
     (reset! buff [])
     (.flush out)))
 
