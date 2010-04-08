@@ -15,12 +15,11 @@
 (defn -read
   ([this]
      (let [{:keys [content share]} (.state this)
-           raw (.readSuper this)
-           ch (char raw)]
-       (if (= ch \newline)
-         (dosync (alter content str \newline))
-         (dosync (alter content str ch)))
-       raw)))
+           c (.readSuper this)]
+       (if (= c -1)
+         nil
+         (dosync (alter content str (char c))))
+       c)))
 
 (defn -unread
   ([this c]
