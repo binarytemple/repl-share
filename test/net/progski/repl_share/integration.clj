@@ -6,11 +6,6 @@
 
 (def mock-content (ref ""))
 
-(def print-it
-     (let [*old-out* *out*]
-       (fn [s]
-         (.write *old-out* s))))
-
 (defn mock-broadcast [share content]
   (dosync (alter mock-content str content)))
 
@@ -19,6 +14,7 @@
 
 (defn share-test [in out]
   (let [in (str in \newline)]
+    ;; reload to get namespace back in initial state
     (require :reload-all 'net.progski.repl-share)
     (binding [broadcast mock-broadcast
               *in* (StringReader. in)
@@ -27,32 +23,25 @@
     (is (= @mock-content (build-screen in out)))
     (dosync (ref-set mock-content ""))))
 
-(deftest test-numbers
+(deftest test-datastructures
   (share-test "1" "1")
-  (share-test "+1" "1")
-  (share-test "-1" "-1")
-  (share-test "(+ 1 2 3)" "6")
-  (share-test "(+ 1\n2\n3)" "6"))
-
-(deftest test-strings
   (share-test "\"ryan\"" "\"ryan\"")
-  (share-test "\"ry\nan\"" "\"ry\\nan\"")
-  (share-test "(str \"hello\" \" world\")" "\"hello world\""))
-
-(deftest test-keywords
-  (share-test ":ryan" ":ryan"))
-
-(deftest test-maps
   (share-test "{:name \"ryan\"}" "{:name \"ryan\"}")
-  (share-test "{:name\n\"ryan\"}" "{:name \"ryan\"}"))
+  (share-test ":ryan" ":ryan")
+  (share-test "'ryan" "ryan")
+  (share-test "[1 2 3]" "[1 2 3]")
+  (share-test "#{:foo :bar}" "#{:foo :bar}")
+  (share-test "'()" "()")
+  (share-test "\\r" "\\r")
+  (share-test "nil" "nil"))
 
-(deftest test-sets
-  (share-test "#{5\n6}" "#{5 6}"))
+(deftest test-multiline
+  (share-test "\"ry\nan\"" "\"ry\\nan\"")
+  (share-test "(str \"hello\" \" world\")" "\"hello world\"")
+  (share-test "{:name\n\"ryan\"}" "{:name \"ryan\"}")
+  (share-test "#{5\n6}" "#{5 6}")
+  (share-test "(+ 1\n2\n3)" "6"))
 
 (deftest test-defs
   (share-test "(def x 6)" "#'user/x")
   (share-test "(defn sq [x] (* x x))" "#'user/sq"))
-
-(deftest test-other
-  (share-test "()" "()")
-  (share-test "nil" "nil"))
