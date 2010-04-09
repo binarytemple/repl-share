@@ -11,8 +11,11 @@
   watching the shared REPL.  That is, I would like for the watch
   function to NOT take over the watcher's REPL.
   
-* TODO printStackTrace prints nil on watcher side
+* DONE printStackTrace prints nil on watcher side
   Exceptions, in general, don't seem to showup on the watcher side.
+
+  Added a class to intercept calls to *err*.  Should be good to go
+  now.
 
 * DONE Multiple lines on share side causes EOF
 
