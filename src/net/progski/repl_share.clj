@@ -13,12 +13,11 @@
   [share f]
   (reset! *watching* true)
   (with-open [sock (join-group *group-addr*)]
-    (while *watching*
+    (while @*watching*
            (.receive sock (make-packet buf))
-           (let [msg (deserialize buf)]
-             (when (= share (msg :share))
-               (if (msg :kill)
-                 (reset! *watching* false)
+           (if @*watching*
+             (let [msg (deserialize buf)]
+               (when (= share (msg :share))
                  (f msg)))))))
 
 (def main-ns (atom *ns*))
@@ -37,7 +36,8 @@
     (binding [in-ns #(reset! main-ns (old-in-ns %))]
       (clojure.main/repl
        :init #(in-ns (ns-name *ns*))
-       :prompt (fn [] (printf "[watching %s] %s=> " share (ns-name *ns*)))))))
+       :prompt (fn [] (printf "[watching %s] %s=> " share (ns-name *ns*))))
+      (reset! *watching* false))))
              
 ;; Share implementation
 (def content (atom []))
