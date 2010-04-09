@@ -1,4 +1,4 @@
-(ns net.progski.repl-share.BroadcastReader
+(ns net.progski.repl-share.InInterceptor
   (:gen-class
    :extends clojure.lang.LineNumberingPushbackReader
    :init init

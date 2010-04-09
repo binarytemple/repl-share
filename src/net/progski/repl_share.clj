@@ -1,5 +1,5 @@
 (ns net.progski.repl-share
-  (:import [net.progski.repl_share BroadcastReader BroadcastWriter
+  (:import [net.progski.repl_share InInterceptor OutInterceptor
             ErrInterceptor])
   (:use [net.progski.repl-share.broadcast]))
 
@@ -46,9 +46,9 @@
 (defn share
   "Share your REPL with the passed share name."
   [share]
-  (binding [*out* (BroadcastWriter. share content *out*)
+  (binding [*out* (OutInterceptor. share content *out*)
             *err* (ErrInterceptor. content *err*)
-            *in* (BroadcastReader. share content *in*)]
+            *in* (InInterceptor. share content *in*)]
     (clojure.main/repl
      :prompt (fn [] (printf "[%s] %s=> " share (ns-name *ns*)))
      :flush (fn []

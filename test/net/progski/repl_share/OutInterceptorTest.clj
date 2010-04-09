@@ -1,7 +1,7 @@
-(ns net.progski.repl-share.BroadcastWriterTest
+(ns net.progski.repl-share.OutInterceptorTest
   (:use [net.progski.repl-share.broadcast :only (broadcast)])
   (:use clojure.test)
-  (:import net.progski.repl_share.BroadcastWriter))
+  (:import net.progski.repl_share.OutInterceptor))
 
 (declare *bw*)
 (def content (atom []))
@@ -12,7 +12,7 @@
 
 ;; Fixtures
 (defn bw-fixture [f]
-  (binding [*bw* (BroadcastWriter. "test" content (java.io.StringWriter.))]
+  (binding [*bw* (OutInterceptor. "test" content (java.io.StringWriter.))]
     (f)))
 
 (use-fixtures :each bw-fixture)

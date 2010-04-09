@@ -1,4 +1,4 @@
-(ns net.progski.repl-share.BroadcastWriter
+(ns net.progski.repl-share.OutInterceptor
   (:gen-class
    :extends java.io.Writer
    :init init

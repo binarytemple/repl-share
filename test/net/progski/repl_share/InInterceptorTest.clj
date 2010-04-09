@@ -1,14 +1,14 @@
-(ns net.progski.repl-share.BroadcastReaderTest
+(ns net.progski.repl-share.InInterceptorTest
   (:use [net.progski.repl-share.broadcast :only (broadcast)])
   (:use clojure.test)
-  (:import net.progski.repl_share.BroadcastReader))
+  (:import net.progski.repl_share.InInterceptor))
 
 (declare *br*)
 (def content (atom []))
 
 ;; Fixtures
 (defn br-fixture [f]
-  (binding [*br* (BroadcastReader. "test" content (java.io.StringReader. "ryan\n"))]
+  (binding [*br* (InInterceptor. "test" content (java.io.StringReader. "ryan\n"))]
     (f))
   (dosync (reset! content [])))
 
