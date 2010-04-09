@@ -4,4 +4,5 @@
                  [org.clojure/clojure-contrib "1.1.0"]]
   :dev-dependencies [[leiningen/lein-swank "1.1.0"]]
   :namespaces [net.progski.repl-share.BroadcastWriter,
-               net.progski.repl-share.BroadcastReader])
+               net.progski.repl-share.BroadcastReader
+               net.progski.repl-share.ErrInterceptor])

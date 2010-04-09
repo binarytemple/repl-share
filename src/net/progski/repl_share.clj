@@ -1,5 +1,6 @@
 (ns net.progski.repl-share
-  (:import [net.progski.repl_share BroadcastReader BroadcastWriter])
+  (:import [net.progski.repl_share BroadcastReader BroadcastWriter
+            ErrInterceptor])
   (:use [net.progski.repl-share.broadcast]))
 
 ;; Watcher implementation
@@ -46,6 +47,7 @@
   "Share your REPL with the passed share name."
   [share]
   (binding [*out* (BroadcastWriter. share content *out*)
+            *err* (ErrInterceptor. content *err*)
             *in* (BroadcastReader. share content *in*)]
     (clojure.main/repl
      :prompt (fn [] (printf "[%s] %s=> " share (ns-name *ns*)))

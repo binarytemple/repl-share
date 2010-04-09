@@ -1,5 +1,5 @@
 (ns net.progski.repl-share.integration
-  (:import [java.io StringReader StringWriter])
+  (:import [java.io PrintWriter StringReader StringWriter])
   (:require [net.progski.repl-share :as rs])
   (:use clojure.test
         net.progski.repl-share.broadcast))
@@ -12,15 +12,24 @@
 (defn build-screen [in out]
   (str "[test] user=> " in  out \newline))
 
-(defn share-test [in out]
-  (let [in (str in \newline)]
+(defn share-test [input output]
+  (let [input (str input \newline)
+        in (StringReader. input)
+        out (StringWriter.)
+        err (StringWriter.)]
     ;; reload to get namespace back in initial state
     (require :reload-all 'net.progski.repl-share)
     (binding [broadcast mock-broadcast
-              *in* (StringReader. in)
-              *out* (StringWriter.)]
+              *in* in
+              *out* out
+              *err* (PrintWriter. err)]
       (rs/share "test"))
-    (is (= @mock-content (build-screen in out)))
+    (is (= @mock-content (build-screen input output)))
+    (when-not (is (or
+                   (.contains (str out) output)
+                   (.contains (str err) output)))
+      (printf "out: %s%n" out)
+      (printf "err: %s%n" err))
     (dosync (ref-set mock-content ""))))
 
 (deftest test-datastructures
@@ -45,3 +54,7 @@
 (deftest test-defs
   (share-test "(def x 6)" "#'user/x")
   (share-test "(defn sq [x] (* x x))" "#'user/sq"))
+
+(deftest test-exceptions
+  (share-test "(throw (Exception. \"oh noes!\"))"
+              "java.lang.Exception: oh noes! (NO_SOURCE_FILE:1)"))
