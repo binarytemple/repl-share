@@ -3,18 +3,17 @@
    :extends clojure.lang.LineNumberingPushbackReader
    :init init
    :main false
-   :constructors {[String clojure.lang.Atom java.io.Reader] [java.io.Reader]}
+   :constructors {[clojure.lang.Atom java.io.Reader] [java.io.Reader]}
    :state state
    :exposes-methods {read readSuper
                      unread unreadSuper}))
 
-(defn -init [s r in]
-  [[in] {:content r
-         :share s}])
+(defn -init [r in]
+  [[in] {:content r}])
 
 (defn -read
   ([this]
-     (let [{:keys [content share]} (.state this)
+     (let [{:keys [content]} (.state this)
            c (.readSuper this)]
        (if (= c -1)
          nil

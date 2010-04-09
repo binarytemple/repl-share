@@ -12,7 +12,7 @@
 
 ;; Fixtures
 (defn bw-fixture [f]
-  (binding [*bw* (OutInterceptor. "test" content (java.io.StringWriter.))]
+  (binding [*bw* (OutInterceptor. content (java.io.StringWriter.))]
     (f)))
 
 (use-fixtures :each bw-fixture)

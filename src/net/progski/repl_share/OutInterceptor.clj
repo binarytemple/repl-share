@@ -3,14 +3,13 @@
    :extends java.io.Writer
    :init init
    :main false
-   :constructors {[String clojure.lang.Atom java.io.Writer] []}
+   :constructors {[clojure.lang.Atom java.io.Writer] []}
    :state state
    :exposes-methods {write writeSuper}))
 
-(defn -init [s r out]
+(defn -init [r out]
   [[] {:buff (atom [])
        :content r
-       :share s
        :out out}])
 
 (defn -write

@@ -46,9 +46,9 @@
 (defn share
   "Share your REPL with the passed share name."
   [share]
-  (binding [*out* (OutInterceptor. share content *out*)
+  (binding [*out* (OutInterceptor. content *out*)
             *err* (ErrInterceptor. content *err*)
-            *in* (InInterceptor. share content *in*)]
+            *in* (InInterceptor. content *in*)]
     (clojure.main/repl
      :prompt (fn [] (printf "[%s] %s=> " share (ns-name *ns*)))
      :flush (fn []

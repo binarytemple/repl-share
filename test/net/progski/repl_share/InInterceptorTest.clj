@@ -8,7 +8,7 @@
 
 ;; Fixtures
 (defn br-fixture [f]
-  (binding [*br* (InInterceptor. "test" content (java.io.StringReader. "ryan\n"))]
+  (binding [*br* (InInterceptor. content (java.io.StringReader. "ryan\n"))]
     (f))
   (dosync (reset! content [])))
 
