@@ -1,7 +1,6 @@
 (ns net.progski.repl-share.broadcast
   (:import [java.net DatagramPacket InetAddress MulticastSocket]))
 
-
 ;; Different group addr?
 (def *group-addr* (InetAddress/getByName "228.5.6.7"))
 
@@ -30,10 +29,12 @@
      (doto (MulticastSocket. port)
        (.joinGroup group))))
 
-(defn broadcast [share msg]
+(defn broadcast [share msg order total]
   (let [sock (MulticastSocket. 6789)
         msg* (serialize {:share share
-                         :content msg})
+                         :content msg
+                         :order order
+                         :total total})
         packet (make-packet msg* *group-addr* 6789)]
     (doto sock
       (.send packet))))

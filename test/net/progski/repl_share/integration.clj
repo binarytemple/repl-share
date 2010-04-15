@@ -5,9 +5,11 @@
         net.progski.repl-share.broadcast))
 
 (def mock-content (ref ""))
+(def broadcast-count (atom 0))
 
-(defn mock-broadcast [share content]
-  (dosync (alter mock-content str content)))
+(defn mock-broadcast [share content order total]
+  (dosync (alter mock-content str content))
+  (swap! broadcast-count inc))
 
 (defn build-screen [in out]
   (str "[test] user=> " in  out \newline))
@@ -58,3 +60,11 @@
 (deftest test-exceptions
   (share-test "(throw (Exception. \"oh noes!\"))"
               "java.lang.Exception: oh noes! (NO_SOURCE_FILE:1)"))
+
+(deftest test-multi-packet
+  (let [expected (binding [*out* (StringWriter.)]
+                   (prn (range 1000))
+                   (.toString *out*))]
+    (share-test "(range 1000)"
+                (.substring expected 0 (dec (count expected))))
+    (is (= 5 @broadcast-count))))

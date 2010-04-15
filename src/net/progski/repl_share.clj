@@ -1,12 +1,22 @@
 (ns net.progski.repl-share
   (:import [net.progski.repl_share InInterceptor OutInterceptor
             ErrInterceptor])
-  (:use [net.progski.repl-share.broadcast]))
+  (:use [net.progski.repl-share.broadcast]
+        [clojure.contrib.seq-utils :only (partition-all)]))
 
 ;; Watcher implementation
-(def buf (byte-array 1000))
+(def *max-size* 914)
+
+;; Incoming raw buffer is max content size plus overhead for other
+;; properties.
+;; share name: 25 characters
+(def buf (byte-array (+ *max-size* 110)))
 
 (def *watching* (atom false))
+(def msg-buff (atom []))
+
+(defn build-msg [msgs]
+  (reduce str (map #(:content %) (sort #(compare (:order %1) (:order %2)) msgs))))
 
 (defn watch*
   "Watch a particular share.  For each message received call f,
@@ -19,7 +29,10 @@
            (if @*watching*
              (let [msg (deserialize buf)]
                (when (= share (msg :share))
-                 (f msg)))))))
+                 (swap! msg-buff conj msg)
+                 (when (= (:total msg) (count @msg-buff))
+                   (f (build-msg @msg-buff))
+                   (reset! msg-buff []))))))))
 
 (def main-ns (atom *ns*))
 
@@ -30,7 +43,7 @@
   (.start
    (Thread. (fn []
               (watch* share
-                      #(do (print (str "\r" (apply str (repeat 100 " ")) "\r" (:content %)))
+                      #(do (print (str "\r" (apply str (repeat 100 " ")) "\r" %))
                            (printf "[watching %s] %s=> " share (ns-name @main-ns))
                            (flush))))))
   (let [old-in-ns in-ns]
@@ -43,6 +56,14 @@
 ;; Share implementation
 (def content (atom []))
 
+(defn partition-content [content]
+  (let [contents (partition-all *max-size* content)
+        total (count contents)
+        nums (iterate inc 0)]
+    (sort #(compare (:order %1) (:order %2))
+          (map (fn [c n] {:content (apply str c) :order n :total total})
+               contents nums))))
+     
 (defn share
   "Share your REPL with the passed share name."
   [share]
@@ -52,6 +73,7 @@
     (clojure.main/repl
      :prompt (fn [] (printf "[%s] %s=> " share (ns-name *ns*)))
      :flush (fn []
-              (broadcast share (apply str @content))
+              (doseq [{:keys [content order total]} (partition-content @content)]
+                (broadcast share content order total))
               (reset! content [])
               (flush)))))
