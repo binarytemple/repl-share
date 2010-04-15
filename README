@@ -1,11 +1,13 @@
 # repl-share
 
-repl-share is a library the allows you to share your repl with others
-across the local network.
+repl-share is a library that allows the easy sharing of a REPL across
+the local network.  You simply give repl-share a group name and
+anyone on the local network can use repl-share to watch your REPL via
+the group name.
 
 The idea for this library came to me during a Clojure meetup.  The
 presenter, Russ Olsen, was demonstrating some code at the REPL and I
-was having a hard time seeing from the back of the room.  I thought to
+was having a hard time readin it from the back of the room.  I thought to
 myself, "Wouldn't it be nice if he could share his REPL over the wifi
 connection?"
 
@@ -19,4 +21,6 @@ FIXME: write
 
 ## License
 
-MIT?
+Copyright (C) 2010 Ryan Zezeski
+
+Distributed under the Eclipse Public License v1.0.  See the file COPYING.

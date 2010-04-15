@@ -4,6 +4,8 @@
 
   The above will cause an EOF in the watcher.
 
+  (<2010-04-14 Wed>): Implemented, but feels dirty.
+
 * DONE Interleave watcher REPL
 
   It would also be great if this output was interleaved with the users
@@ -76,3 +78,10 @@ Caused by: java.lang.IllegalStateException: Can't pop empty vector
 	... 22 more
 nil
 
+* DONE Add license
+  (<2010-04-14 Wed>): Keep it simple, use EPL.
+* TODO Install instructions
+* TODO Usage instructions
+* TODO Rename share to group
+  Share reminds me of MS too much.  Plus group is what its called in
+  multicast land.
