@@ -1,8 +1,7 @@
 (ns net.progski.repl-share
   (:import [net.progski.repl_share InInterceptor OutInterceptor
             ErrInterceptor])
-  (:use [net.progski.repl-share.broadcast]
-        [clojure.contrib.seq-utils :only (partition-all)]))
+  (:use [net.progski.repl-share.broadcast]))
 
 ;; Watcher implementation
 (def *max-size* 914)
